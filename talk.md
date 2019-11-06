@@ -104,5 +104,39 @@ TODO: test
 
 * Resolve symlinks in a *safe* way.
 * https://github.com/kubernetes/kubernetes/issues/60813
-* KubeCon NA 2018: [*How Symlinks Pwned Kubernetes (And How We Fixed It) - Michelle Au, Google & Jan Šafránek, Red Hat*](https://events19.linuxfoundation.org/events/kubecon-cloudnativecon-north-america-2018/schedule/).
+* KubeCon NA 2018: [*How Symlinks Pwned Kubernetes (And How We Fixed It) - Michelle Au, Google & Jan Šafránek, Red Hat*](https://events19.linuxfoundation.org/events/kubecon-cloudnativecon-north-america-2018/schedule/**.
+
+---
+
+# What happens when a block volume gets mounted on different nodes at the same time?
+
+* For longest time Kubernetes did not enforce AccessMode of a volume and leaving this to storage provider.
+  1. Lacking no control-plane based fencing mechanism, this can cause file system corruption and some very hard to track errors.
+  2. In some cases where Storage Provider did not expect it, it caused instances to freeze or refusing to start on reboot.
+* We implemented control-plane based enforcing of AccessMode for attachable volume types.
+
+---
+
+# So problem solved?
+
+* Not really - not all volume types are attachable. 
+* Volume types which are attachable:
+  - AWS EBS
+  - GCE PD
+  - vSphere disks
+* Volume types which are not attachable:
+  - iSCSI
+  - Ceph-RBD
+* A CSI volume type is considered attachable if it implements `ControllerPublishVolume` RPC call.
+
+---
+
+# Solution for non-attachable volume types
+
+* Implement a dummy `Attach` and `Detach` interface which is basically a NO-OP for `iSCSI` and `Ceph-RBD`.
+* Recommendation for CSI driver:
+  - If your driver exposes block volume types and has no `ControllerPublishVolume` RPC call, do not disable
+    attach/detach from `CSIDriver` object.
+
+---
 
