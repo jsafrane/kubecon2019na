@@ -118,3 +118,26 @@ Symlinks created *in a pod* were evaluated *outside of the pod*.
 
 ---
 
+# Data from persistent volumes is wiped after a node service restart: What
+
+* Kubernetes 1.3 (*ancient history*).
+* Kubelet is *offline* and a running pod is deleted in the API server.
+* Newly (re)started kubelet deletes data on the volume.
+
+---
+
+# Data from persistent volumes is wiped after a node service restart: Why
+
+* Newly (re)started kubelet does not see the pod in API server.
+  * VolumeManager in kubelet did not unmount the volume.
+  * Orphan directory scan did not check mounts and deleted across filesystems. 
+
+---
+
+# Data from persistent volumes is wiped after a node service restart: How
+
+* Never delete orphan directories across filesystem boundary.
+* Introduce *reconstruction* - scan /var/lib/kubelet/pods and reconstruct VolumeManager caches.
+  * Still fixing bugs there :-).
+
+---
