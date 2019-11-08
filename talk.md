@@ -20,6 +20,11 @@ Red Hat
 
 ---
 
+template: inverse
+# Data lost during migration
+
+---
+
 # Data lost during migration: What?
 1. User moves PV an PVC objects from "testing" to "production" clusters.
     ```shell
@@ -56,6 +61,12 @@ Red Hat
 
 ---
 
+template: inverse
+# CVE-2017-1002101
+# *Subpath volume mount handling allows arbitrary file access in host filesystem*
+
+---
+
 # CVE-2017-1002101: What?
 
 *"Subpath volume mount handling allows arbitrary file access in host filesystem"*
@@ -83,6 +94,11 @@ Symlinks created *in a pod* were evaluated *outside of the pod*.
 * Resolve symlinks in a *safe* way.
 * https://github.com/kubernetes/kubernetes/issues/60813
 * KubeCon NA 2018: [How Symlinks Pwned Kubernetes (And How We Fixed It) - Michelle Au, Google & Jan Šafránek, Red Hat](https://events19.linuxfoundation.org/events/kubecon-cloudnativecon-north-america-2018/schedule/).
+
+---
+
+template: inverse
+# Corrupted filesystem on ReadWriteOnce volumes
 
 ---
 
@@ -118,26 +134,29 @@ Symlinks created *in a pod* were evaluated *outside of the pod*.
 
 ---
 
-# Data from persistent volumes is wiped after a node service restart: What
+template: inverse
+# Data on `PersistentVolume` wiped after kubelet restart
 
-* Kubernetes 1.3 (*ancient history*).
-* Kubelet is *offline* and a running pod is deleted in the API server.
-* Newly (re)started kubelet deletes data on the volume.
+---
+# Data on PV wiped after kubelet restart: What?
+
+* Kubelet is offline and a running pod is deleted in the API server.
+* Newly (re)started kubelet deletes all data on a volume that the pod used.
 
 ---
 
-# Data from persistent volumes is wiped after a node service restart: Why
+# Data on PV wiped after kubelet restart: Why?
 
 * Newly (re)started kubelet does not see the pod in API server.
-  * VolumeManager in kubelet did not unmount the volume.
+  * kubelet did not unmount the volume.
   * Orphan directory scan did not check mounts and deleted across filesystems. 
 
 ---
 
-# Data from persistent volumes is wiped after a node service restart: How
+# Data on PV wiped after kubelet restart: How?
 
 * Never delete orphan directories across filesystem boundary.
-* Introduce *reconstruction* - scan /var/lib/kubelet/pods and reconstruct VolumeManager caches.
+* Introduce *reconstruction* - scan `/var/lib/kubelet/pods` on kubelet start and reconstruct caches.
   * Still fixing bugs there :-).
 
 ---
