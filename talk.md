@@ -20,6 +20,10 @@ Red Hat
 
 ---
 
+TODO: add agenda / list of issues covered in the talk
+
+---
+
 template: inverse
 # Data lost during migration
 
@@ -160,3 +164,64 @@ template: inverse
   * Still fixing bugs there :-).
 
 ---
+
+class: center, middle
+# Not fixable issues
+
+---
+
+# `PersistentVolumeClaim` naming
+
+* `PersistentVolumeClaim` -> `PersistentVolume`.
+* `PersistentVolume` -> some implementation detail.
+* "Fixed" in `VolumeSnapshot` & `VolumeSnapshotContent`.
+
+---
+
+# `AccessModes`
+
+* `ReadWriteOne`, `ReadWriteMany`, `ReadOnlyMany`
+* Enforced only lightly in A/D controller!
+  * Multiple pods can still use single `ReadWriteOne` volume on the same node.
+* Would break behavior.
+
+---
+
+class: center, middle
+# Open Issues
+
+---
+
+# Recursive `chown`
+
+```shell
+$ kubectl explain pod.spec.securityContext.fsGroup
+
+FIELD:    fsGroup <integer>
+
+DESCRIPTION:
+     A special supplemental group that applies to all containers in a pod. Some
+     volume types allow the Kubelet to change the ownership of that volume to be
+     owned by the pod [...]
+```
+
+* kubelet does recursive `chown` to set ownership of all files on the volume.
+  * Slow on large volumes.
+* Design in progress.
+  * Take shortcuts? Some files may have wrong owner.
+  * Make `chown` optional? Requires API change.
+  * Use overlay FS? Requires the overlay installed on nodes.
+
+---
+
+# Shutdown nodes
+
+TODO(hekumar): fill details
+
+---
+
+# Volume reconstruction
+
+* kubelet reconstructs caches from `/var/lib/kubelet/pods`.
+* There should be real database / checkpointing.
+  * Current kubelet checkpoints do not include PVCs / PVs.
