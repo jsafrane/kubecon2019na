@@ -48,6 +48,7 @@ template: inverse
 * PV has `ReclaimPolicy: Delete`.
   * *"Delete the volume when this PV is not needed any longer."*
   * *"Any longer"* = PVC does not exist.
+--
 * PVs were restored with `pv.spec.claimRef.UID`, i.e. as fully bound!
   * PVC did not exist (yet).
   * -> `ReclaimPolicy` was executed.
@@ -62,6 +63,12 @@ template: inverse
   * *How to Backup and Restore Your Kubernetes Cluster - Annette Clewett & Dylan Murray, Tuesday 4:25pm.*
 * Consider using `ReclaimPolicy: Retain`.
   * Perhaps with a custom controller / operator that deletes the volumes after review, backup and / or grace period.
+
+---
+
+# Data lost during migration: Lessons learned
+
+* Better documentation!
 
 ---
 
@@ -98,6 +105,14 @@ Symlinks created *in a pod* were evaluated *outside of the pod*.
 * Resolve symlinks in a *safe* way.
 * https://github.com/kubernetes/kubernetes/issues/60813
 * KubeCon NA 2018: [How Symlinks Pwned Kubernetes (And How We Fixed It) - Michelle Au, Google & Jan Šafránek, Red Hat](https://events19.linuxfoundation.org/events/kubecon-cloudnativecon-north-america-2018/schedule/).
+
+---
+
+# CVE-2017-1002101: Lessons learned
+
+* Don't trust user.
+* Containers can introduce security issues not seen before.
+* Kubernetes Security Response Team (aka Product Security Committee) works and is helpful. 
 
 ---
 
@@ -165,8 +180,27 @@ template: inverse
 
 ---
 
+# Data on PV wiped after kubelet restart: Lessons learned
+
+* Verify all `os.RemoveAll` in Kubernetes.
+* Tests for kubelet restart.
+
+---
+
 class: center, middle
 # Not fixable issues
+
+---
+
+# `PersistentVolumeClaim` naming
+
+<center><img src="marvin.jpg" width="25%"></center>
+
+--
+
+* `Pod` is not `CPUAndMemoryClaim`.
+* `Service` is not `LoadBalancerClaim`.
+* `Volume` **is** `PersistentVolumeClaim` ?
 
 ---
 
@@ -183,7 +217,7 @@ class: center, middle
 * `ReadWriteOne`, `ReadWriteMany`, `ReadOnlyMany`
 * Enforced only lightly in A/D controller!
   * Multiple pods can still use single `ReadWriteOne` volume on the same node.
-* Would break behavior.
+* Fix would break behavior.
 
 ---
 
@@ -205,7 +239,7 @@ DESCRIPTION:
      owned by the pod [...]
 ```
 
-* kubelet does recursive `chown` to set ownership of all files on the volume.
+* kubelet does recursive `chown` to set ownership of **all** files on the volume.
   * Slow on large volumes.
 * Design in progress.
   * Take shortcuts? Some files may have wrong owner.
@@ -223,5 +257,7 @@ TODO(hekumar): fill details
 # Volume reconstruction
 
 * kubelet reconstructs caches from `/var/lib/kubelet/pods`.
-* There should be real database / checkpointing.
+  * TODO: add example?
+  * Mostly works and is actively supported!
+* There should be a real database / checkpointing.
   * Current kubelet checkpoints do not include PVCs / PVs.
