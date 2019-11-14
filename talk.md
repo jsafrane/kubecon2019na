@@ -183,7 +183,26 @@ template: inverse
 # Data on PV wiped after kubelet restart: Lessons learned
 
 * Verify all `os.RemoveAll` in Kubernetes.
-* Tests for kubelet restart.
+* Introduce `[Distuptive]` tests for kubelet restart.
+
+---
+
+# Data on PV wiped after kubelet restart again: What?
+
+* A directory on the root disk used as local volume wiped out.
+
+---
+
+# Data on PV wiped after kubelet restart again: Why?
+
+* Root disk used as a local volume does not introduce filesystem boundary.
+* The local volume was used with `SubPath` feature.
+
+---
+
+# Data on PV wiped after kubelet restart again: Lessons learned
+
+* Introduce `[Distuptive]` tests for kubelet restart with `SubPath`.
 
 ---
 
