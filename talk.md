@@ -45,13 +45,13 @@ template: inverse
 
 # Data lost during migration: Why?
 
-* PV has `ReclaimPolicy: Delete`.
+* PV has `RersistentVolumeReclaimPolicy: Delete`.
   * *"Delete the volume when this PV is not needed any longer."*
   * *"Any longer"* = PVC does not exist.
 --
-* PVs were restored with `pv.spec.claimRef.UID`, i.e. as fully bound!
+* PVs were restored as fully bound!
   * PVC did not exist (yet).
-  * -> `ReclaimPolicy` was executed.
+  * -> `PersistentVolumeReclaimPolicy` was executed.
 
 ---
 
@@ -61,7 +61,7 @@ template: inverse
 * Do regular backups!
 * Use dedicated tools for migration, such as Ark / Velero.
   * *How to Backup and Restore Your Kubernetes Cluster - Annette Clewett & Dylan Murray, Tuesday 4:25pm.*
-* Consider using `ReclaimPolicy: Retain`.
+* Consider using `PersistentVolumeReclaimPolicy: Retain`.
   * Perhaps with a custom controller / operator that deletes the volumes after review, backup and / or grace period.
 
 ---
@@ -157,6 +157,7 @@ template: inverse
 # Data on `PersistentVolume` wiped after kubelet restart
 
 ---
+
 # Data on PV wiped after kubelet restart: What?
 
 * Kubelet is offline and a running pod is deleted in the API server.
@@ -168,7 +169,7 @@ template: inverse
 
 * Newly (re)started kubelet does not see the pod in API server.
   * kubelet did not unmount the volume.
-  * Orphan directory scan did not check mounts and deleted across filesystems. 
+  * Orphan directory scan removed all files in presumably empty pod directory. 
 
 ---
 
@@ -187,22 +188,54 @@ template: inverse
 
 ---
 
+template: inverse
+# Data on `PersistentVolume` wiped after kubelet restart again
+
+---
+
 # Data on PV wiped after kubelet restart again: What?
 
 * A directory on the root disk used as local volume wiped out.
+* Same scenario as above.
 
 ---
 
 # Data on PV wiped after kubelet restart again: Why?
 
 * Root disk used as a local volume does not introduce filesystem boundary.
+* Local volume did not use reconstruction.
 * The local volume was used with `SubPath` feature.
 
 ---
 
 # Data on PV wiped after kubelet restart again: Lessons learned
 
-* Introduce `[Distuptive]` tests for kubelet restart with `SubPath`.
+* Introduce `[Disruptive]` tests for kubelet restart with `SubPath`.
+
+---
+
+template: inverse
+# Volumes are recycled while they are still used by pods
+
+---
+
+# Volumes are recycled while they are still used by pods: What?
+
+* `PersistentVolumeClaim` can be deleted while some Pods use it.
+  * `PersistentVolumeReclaimPolicy: Recycle`: the volume is wiped while the pods still use it!
+  * `PersistentVolumeReclaimPolicy: Delete`: Kubernetes tries to delete the volume. 
+
+---
+
+# Volumes are recycled while they are still used by pods: Why?
+
+* Kubernetes has no referential integrity.
+---
+
+# Volumes are recycled while they are still used by pods: How?
+
+* Using `Finalizers`.
+* StorageInUseProtection admission plugin and controller.
 
 ---
 
