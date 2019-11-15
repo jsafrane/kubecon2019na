@@ -322,7 +322,27 @@ DESCRIPTION:
 
 # Shutdown nodes
 
-TODO(hekumar): fill details
+* Kubernetes will not automatically detach volumes from nodes which have been shutdown.
+  * Kubernetes does evict Pods from shutdown nodes automatically.
+  * Replacement Pods on new nodes may not be able to start if they are using Persistent volumes.
+
+---
+
+# Kubernetes will not detach volumes from shutdown nodes
+
+* Pods on shutdown node do not automatically get deleted and stay in "unknown" state.
+* Kubernetes does not detach volumes from Pods in "unknown" state.
+
+---
+
+# How do we recover from it?
+
+* On cloudprovider managed clusters such as AWS, GCE - running a cluster in Autoscaling group will cause a shutdown node to be deleted and replaced.
+  * Volumes are automatically detached from a deleted node.
+* For bare-metal clusters or cloudproviders that don't allow easy replacement of a node, this is a bigger problem.
+  * An external controller can monitor for shutdown nodes and force delete pods in "unknown" state from those nodes.
+* Kubernetes community is working on a design consensus that should solve this for good.
+
 
 ---
 
