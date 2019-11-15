@@ -348,8 +348,18 @@ DESCRIPTION:
 
 # Volume reconstruction
 
+TODO: remove? It's covered in one of the fixed issues.
+
 * kubelet reconstructs caches from `/var/lib/kubelet/pods`.
   * TODO: add example?
   * Mostly works and is actively supported!
 * There should be a real database / checkpointing.
   * Current kubelet checkpoints do not include PVCs / PVs.
+
+---
+
+# `EmptyDir` volumes share I/O
+
+* `EmptyDir` shares I/O bandwidth with the system and all other pods.
+* Rogue pod may trash I/O performance for the others.
+* TODO: check?
