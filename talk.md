@@ -237,21 +237,15 @@ class: center, middle
 
 # `PersistentVolumeClaim` naming
 
-<center><img src="marvin.jpg" width="25%"></center>
+* `Pod` is not `CPUAndMemoryClaim`.
+--
+* `Service` is not `LoadBalancerClaim`.
+--
+* `Volume` **is** `PersistentVolumeClaim` ???
 
 --
 
-* `Pod` is not `CPUAndMemoryClaim`.
-* `Service` is not `LoadBalancerClaim`.
-* `Volume` **is** `PersistentVolumeClaim` ?
-
----
-
-# `PersistentVolumeClaim` naming
-
-* `PersistentVolumeClaim` -> `PersistentVolume`.
-* `PersistentVolume` -> some implementation detail.
-* "Fixed" in `VolumeSnapshot` & `VolumeSnapshotContent`.
+"Fixed" in `VolumeSnapshot` & `VolumeSnapshotContent`.
 
 ---
 
