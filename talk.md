@@ -20,7 +20,7 @@ Red Hat
 
 ---
 
-TODO: add agenda / list of issues covered in the talk
+# TODO: agenda / intro
 
 ---
 
@@ -29,7 +29,9 @@ template: inverse
 
 ---
 
-# Data lost during migration: What?
+# Data lost during migration
+## What happened?
+
 1. User moves PV an PVC objects from "testing" to "production" clusters.
     ```shell
     $ kubectl get pv -o yaml > pvs.yaml
@@ -38,24 +40,17 @@ template: inverse
     $ kubectl apply -f pvs.yaml
     $ kubectl apply -f pvcs.yaml
     ```
-
 2. **Kubernetes deletes PV and the volume in storage backend.**
+--
 
----
-
-# Data lost during migration: Why?
-
-* PV has `RersistentVolumeReclaimPolicy: Delete`.
+## Why?
+* `PersistentVolumeReclaimPolicy: Delete`.
   * *"Delete the volume when this PV is not needed any longer."*
   * *"Any longer"* = PVC does not exist.
---
-* PVs were restored as fully bound!
-  * PVC did not exist (yet).
-  * -> `PersistentVolumeReclaimPolicy` was executed.
 
 ---
 
-# Data lost during migration: How?
+# Data lost during migration
 ## It's not a bug, it's a feature!
 
 * Do regular backups!
@@ -64,11 +59,9 @@ template: inverse
 * Consider using `PersistentVolumeReclaimPolicy: Retain`.
   * Perhaps with a custom controller / operator that deletes the volumes after review, backup and / or grace period.
 
----
+--
 
-# Data lost during migration: Lessons learned
-
-* Better documentation!
+## Lessons learned: better documentation!
 
 ---
 
@@ -78,7 +71,8 @@ template: inverse
 
 ---
 
-# CVE-2017-1002101: What?
+# CVE-2017-1002101
+## What happened?
 
 *"Subpath volume mount handling allows arbitrary file access in host filesystem"*
 
@@ -88,27 +82,19 @@ A pod can get access to full host filesystem, including:
   * Any Pod volume present on the node.
   * ...
 
+--
+## Why?
+* Symlinks created *in a pod* were evaluated *outside of the pod*.
+
+---
+
+# CVE-2017-1002101
+## How we fixed it?
+
 KubeCon NA 2018: [How Symlinks Pwned Kubernetes (And How We Fixed It) - Michelle Au, Google & Jan Šafránek, Red Hat](https://events19.linuxfoundation.org/events/kubecon-cloudnativecon-north-america-2018/schedule/).
 
----
-
-# CVE-2017-1002101: Why?
-
-Symlinks created *in a pod* were evaluated *outside of the pod*.
-
-* `/mnt/foo` -> `/` has a very different target depending on who is looking.
-
----
-
-# CVE-2017-1002101: How?
-
-* Resolve symlinks in a *safe* way.
-* https://github.com/kubernetes/kubernetes/issues/60813
-* KubeCon NA 2018: [How Symlinks Pwned Kubernetes (And How We Fixed It) - Michelle Au, Google & Jan Šafránek, Red Hat](https://events19.linuxfoundation.org/events/kubecon-cloudnativecon-north-america-2018/schedule/).
-
----
-
-# CVE-2017-1002101: Lessons learned
+--
+## Lessons learned
 
 * Don't trust user.
 * Containers can introduce security issues not seen before.
@@ -158,14 +144,15 @@ template: inverse
 
 ---
 
-# Data on PV wiped after kubelet restart: What?
+# Data on PV wiped after kubelet restart
+## What happened?
 
 * Kubelet is offline and a running pod is deleted in the API server.
 * Newly (re)started kubelet deletes all data on a volume that the pod used.
 
----
+--
 
-# Data on PV wiped after kubelet restart: Why?
+## Why?
 
 * Newly (re)started kubelet does not see the pod in API server.
   * kubelet did not unmount the volume.
@@ -173,18 +160,19 @@ template: inverse
 
 ---
 
-# Data on PV wiped after kubelet restart: How?
+# Data on PV wiped after kubelet restart
+## How we fixed it?
 
-* Never delete orphan directories across filesystem boundary.
+* Verify all `os.RemoveAll` in Kubernetes.
+  * Never delete orphan directories across filesystem boundary.
 * Introduce *reconstruction* - scan `/var/lib/kubelet/pods` on kubelet start and reconstruct caches.
   * Still fixing bugs there :-).
 
----
+--
 
-# Data on PV wiped after kubelet restart: Lessons learned
+## Lessons learned
 
-* Verify all `os.RemoveAll` in Kubernetes.
-* Introduce `[Distuptive]` tests for kubelet restart.
+* Introduced `[Distuptive]` tests for kubelet restart.
 
 ---
 
@@ -193,47 +181,50 @@ template: inverse
 
 ---
 
-# Data on PV wiped after kubelet restart again: What?
+# Data on PV wiped after kubelet restart *again*
+## What happened?
 
 * A directory on the root disk used as local volume wiped out.
 * Same scenario as above.
 
----
+--
 
-# Data on PV wiped after kubelet restart again: Why?
+## Why?
 
 * Root disk used as a local volume does not introduce filesystem boundary.
-* Local volume did not use reconstruction.
 * The local volume was used with `SubPath` feature.
 
----
+## How we fixed it?
 
-# Data on PV wiped after kubelet restart again: Lessons learned
+* Check for SubPath volumes before removing orphan directories.
+
+--
+
+## Lessons learned
 
 * Introduce `[Disruptive]` tests for kubelet restart with `SubPath`.
 
 ---
 
 template: inverse
-# Volumes are recycled while they are still used by pods
+# Volumes are recycled while they are used by pods
 
 ---
 
-# Volumes are recycled while they are still used by pods: What?
+# Volumes are recycled while they are used by pods
+## What happened?
 
-* `PersistentVolumeClaim` can be deleted while some Pods use it.
-  * `PersistentVolumeReclaimPolicy: Recycle`: the volume is wiped while the pods still use it!
-  * `PersistentVolumeReclaimPolicy: Delete`: Kubernetes tries to delete the volume. 
+* User deletes PVC while it's still used by a pod.
 
----
-
-# Volumes are recycled while they are still used by pods: Why?
+## Why?
 
 * Kubernetes has no referential integrity.
----
+* `PersistentVolumeReclaimPolicy: Recycle`: the volume is wiped!
+* `PersistentVolumeReclaimPolicy: Delete`: Kubernetes tries to delete the volume. 
 
-# Volumes are recycled while they are still used by pods: How?
+--
 
+## How we fixed it?
 * Using `Finalizers`.
 * StorageInUseProtection admission plugin and controller.
 
