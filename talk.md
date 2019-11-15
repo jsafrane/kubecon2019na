@@ -177,7 +177,7 @@ template: inverse
 ---
 
 template: inverse
-# Data on `PersistentVolume` wiped after kubelet restart again
+# Data on `PersistentVolume` wiped after kubelet restart *again*
 
 ---
 
@@ -230,7 +230,42 @@ template: inverse
 
 ---
 
-class: center, middle
+template: inverse 
+# Volumes not attached / detached on AWS
+
+---
+
+# Volumes not attached / detached on AWS
+## What happened?
+
+* AWS EBS volume was *attaching* forever.
+* AWS EBS volume was *detaching* forever.
+* + similar issues.
+* Very hard to reproduce.
+
+--
+
+## Why?
+
+* Device allocation.
+  * Re-using a device that was just released can lead to volume *attaching* forever.
+  * Devices used by force-detached volumes are unusable.
+* Eventual consistency.
+  * Can go back in time.
+* Mounted volumes cannot be detached (*detaching* forever).
+
+---
+
+# Volumes not attached / detached on AWS
+
+##  How we fixed it?
+
+* Lot of workarounds in Kubernetes AWS cloud provider.
+* Still fixing it.
+
+---
+
+template: inverse
 # Not fixable issues
 
 ---
@@ -258,7 +293,7 @@ class: center, middle
 
 ---
 
-class: center, middle
+template: inverse
 # Open Issues
 
 ---
