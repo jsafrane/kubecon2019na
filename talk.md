@@ -125,14 +125,46 @@ background-image: url(slide_text.png)
 background-size: cover
 
 # Corrupted filesystem on ReadWriteOnce volumes
+## Story of two bugs, two years apart:
 
-* For longest time Kubernetes did not enforce AccessMode of a volume and leaving this to storage provider.
+* Nobody wants this in their Kernel logs
+
+```shell
+[2480314.265276] XFS (dm-43): Unmounting Filesystem
+[2480314.543698] device-mapper: ioctl: remove_all left 68 open device(s)
+[2480342.623544] XFS (dm-7): Metadata corruption detected at xfs_inode_buf_verify
+[2480342.623703] XFS (dm-7): Unmount and run xfs_repair
+[2480342.623786] XFS (dm-7): First 64 bytes of corrupted metadata buffer:
+```
+
 --
-  1. Lacking no control-plane based fencing mechanism, this can cause file system corruption and some very hard to track errors.
+* Kubernetes/Openshift version - 1.10/3.10
 --
-  2. In some cases where Storage Provider did not expect it, it caused instances to freeze or refusing to start on reboot.
+* Volume type: Fiber channel
 --
-* We implemented control-plane based enforcing of AccessMode for attachable volume types.
+* Reported on: November 2017
+
+---
+
+name: text-slide
+background-image: url(slide_text.png)
+background-size: cover
+
+# Corrupted filesystem on ReadWriteOnce volumes
+
+* And neither we want this in our Kernel logs
+
+```shell
+Aug 26 22:34:57.001029 ip-10-0-6 kernel: XFS (rbd0): Metadata corruption detected at xfs_dir
+Aug 26 22:34:57.001213 ip-10-0-6 kernel: XFS (rbd0): Unmount and run xfs_repair
+Aug 26 22:34:57.001342 ip-10-0-6 kernel: XFS (rbd0): First 128 bytes of corrupted metadata
+```
+--
+* Kubernetes/Openshift version - 1.14/4.2
+--
+* Volume type: Ceph-RBD via CSI/Rook
+--
+* Reported on: August 2019
 
 ---
 name: text-slide
@@ -140,29 +172,114 @@ background-image: url(slide_text.png)
 background-size: cover
 
 # Corrupted filesystem on ReadWriteOnce volumes
-## So problem solved?
+## So what are AccessModes?
+--
+* ReadWriteOnce
+--
+* ReadWriteMany
+--
+* ReadOnlyMany
+--
 
-* Not really - not all volume types are attachable. 
-* Volume types which are attachable:
-  - AWS EBS
-  - GCE PD
-  - vSphere disks
-* Volume types which are not attachable:
-  - iSCSI
-  - Ceph-RBD
-* A CSI volume type is considered attachable if it implements `ControllerPublishVolume` RPC call.
+## You can request a volume of specific AccessMode while creating a PVC:
+
+```yaml
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: myclaim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+
+```
+
+---
+name: text-slide
+background-image: url(slide_text.png)
+background-size: cover
+
+# Corrupted filesystem on ReadWriteOnce volumes
+* Kubernetes did not enforce AccessModes at all until version 1.7/1.8
+--
+  - You could always create two pods that use same volume but could be mounted on two different nodes.
+--
+  - In cases where Storage Provider did not had any protection/fencing - it caused problems.
+--
+
+* We implemented control-plane based enforcing of AccessModes.
+
+---
+name: text-slide
+background-image: url(slide_text.png)
+background-size: cover
+
+# Corrupted filesystem on ReadWriteOnce volumes
+## But those two bugs are newer - 1.10 and 1.14!
+
+--
+## Limitations of AccessMode enforcement in Kubernetes
+--
+* It only works for volume types that are Attachable.
+--
+* It does not prevent 2 pods from using same volume on same node.
+--
+* It is based on cached volume state in controller-manager. 
+
+---
+name: text-slide
+background-image: url(slide_text.png)
+background-size: cover
+
+# Corrupted filesystem on ReadWriteOnce volumes
+## Attachable volumes:
+* AWS EBS
+* GCE PD
+* vSphere disks
+* CSI volume that does have `PUBLISH_UNPUBLISH_VOLUME` capability.
+
+--
+## Volume types which are not attachable:
+* iSCSI
+* Ceph-RBD
+* Fiber Channel
+* CSI volume that does not have `PUBLISH_UNPUBLISH_VOLUME` capability.
 
 ---
 name: text-slide
 background-image: url(slide_text.png)
 background-size: cover
 # Corrupted filesystem on ReadWriteOnce volumes
-## Solution for non-attachable volume types
+## Fix for non-attachable volumes(in-tree)
+--
+* Implement a dummy `Attach` and `Detach` interface which is basically a NOOP for `iSCSI`, `FC` and `Ceph-RBD`.
+--
+* This would basically turn non-attachable volume types into attachable.
+--
+* It will ensure that volume is made available on a node via control-plane attach/detach controller and not directly.
 
-* Implement a dummy `Attach` and `Detach` interface which is basically a NO-OP for `iSCSI` and `Ceph-RBD`.
-* Recommendation for CSI driver:
-  - If your driver exposes block volume types and has no `ControllerPublishVolume` RPC call, do not disable
-    attach/detach from `CSIDriver` object.
+---
+name: text-slide
+background-image: url(slide_text.png)
+background-size: cover
+# Corrupted filesystem on ReadWriteOnce volumes
+## Recommendations for CSI Volumes
+* Whenever possible implement strong control-plane based fencing for publishing volumes to a node.
+--
+  - Pushes the problem back to storage provider from Kubernetes.
+--
+  - May not be possible in some cases where an off-the-shelf storage solution is deployed.
+--
+
+* External-Attacher CSI sidecar can support NOOP attach/detach of volumes which don't have `CONTROLLER_PUPLISH_UNPUBLISH` capability.
+--
+  - Ensure that external-attacher is running even if CSI driver does not support attach/detach.
+--
+  - Do not disable attach/detach from `CSIDriver` object.
+
 
 ---
 
