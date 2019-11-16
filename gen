@@ -28,3 +28,19 @@ exportwithoutlayer $INPUT "[345]" migration-pvc2.png
 exportwithoutlayer $INPUT "[45]" migration-pvc3.png
 exportwithoutlayer $INPUT "[5]" migration-pvc4.png
 exportwithoutlayer $INPUT "999" migration-pvc5.png
+
+# Before PVC protection
+INPUT=protection-before.svg
+exportwithoutlayer $INPUT "[23]" protection-before1.png
+exportwithoutlayer $INPUT "[3]" protection-before2.png
+exportwithoutlayer $INPUT "999" protection-before3.png
+
+# After PVC protection
+INPUT=protection-after.svg
+exportwithoutlayer $INPUT "[23456]" protection-after1.png
+exportwithoutlayer $INPUT "[3456]" protection-after2.png
+exportwithoutlayer $INPUT "[456]" protection-after3.png
+exportwithoutlayer $INPUT "[56]" protection-after4.png
+exportwithoutlayer $INPUT "[6]" protection-after5.png
+exportwithoutlayer $INPUT "999" protection-after6.png
+

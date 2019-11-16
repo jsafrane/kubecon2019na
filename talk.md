@@ -409,19 +409,99 @@ template: inverse
 * User deletes PVC while it's still used by a pod.
 * All data on the volume are wiped.
 
---
+---
 
+# Volumes are recycled while they are used by pods
+## Why?
+* Kubernetes has no referential integrity.
+
+.center[
+  <img src="protection-before1.png" width="65%"/><br/>
+]
+
+---
+
+# Volumes are recycled while they are used by pods
 ## Why?
 
-* Kubernetes has no referential integrity.
-* `PersistentVolumeReclaimPolicy: Recycle`: the volume is wiped!
-* `PersistentVolumeReclaimPolicy: Delete`: Kubernetes tries to delete the volume. 
+.center[
+  <img src="protection-before2.png" width="65%"/><br/>
+]
 
---
+---
 
+# Volumes are recycled while they are used by pods
+## Why?
+
+.center[
+  <img src="protection-before3.png" width="65%"/><br/>
+]
+
+---
+
+# Volumes are recycled while they are used by pods
 ## How we fixed it?
 * Using `Finalizers`.
 * StorageInUseProtection admission plugin and controller.
+
+.center[
+  <img src="protection-after1.png" width="65%"/><br/>
+]
+
+---
+
+# Volumes are recycled while they are used by pods
+## How we fixed it?
+* Using `Finalizers`.
+* StorageInUseProtection admission plugin and controller.
+
+.center[
+  <img src="protection-after2.png" width="65%"/><br/>
+]
+
+---
+
+# Volumes are recycled while they are used by pods
+## How we fixed it?
+* Using `Finalizers`.
+* StorageInUseProtection admission plugin and controller.
+
+.center[
+  <img src="protection-after3.png" width="65%"/><br/>
+]
+
+---
+
+# Volumes are recycled while they are used by pods
+## How we fixed it?
+* Using `Finalizers`.
+* StorageInUseProtection admission plugin and controller.
+
+.center[
+  <img src="protection-after4.png" width="65%"/><br/>
+]
+
+---
+
+# Volumes are recycled while they are used by pods
+## How we fixed it?
+* Using `Finalizers`.
+* StorageInUseProtection admission plugin and controller.
+
+.center[
+  <img src="protection-after5.png" width="65%"/><br/>
+]
+
+---
+
+# Volumes are recycled while they are used by pods
+## How we fixed it?
+* Using `Finalizers`.
+* StorageInUseProtection admission plugin and controller.
+
+.center[
+  <img src="protection-after6.png" width="65%"/><br/>
+]
 
 ---
 
