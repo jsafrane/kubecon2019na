@@ -1,0 +1,23 @@
+#!/bin/bash
+
+function exportwithoutlayer()
+{
+    xmlstarlet c14n $1 | sed  >tmp.svg  -e "s/g id=\"layer\\($2\\)\" style=\"display:inline\"/g id=\"layer\\1\" style=\"display:none\"/"
+    inkscape tmp.svg -D -d 300 --export-png=$3
+    rm tmp.svg
+}
+
+function exportwithlayer()
+{
+    xmlstarlet c14n $1 | sed  -e "s/g id=\"layer\\([0-9]*\\)\" style=\"display:inline\"/g id=\"layer\\1\" style=\"display:none\"/" | sed > tmp.svg -e "s/g id=\"layer\\($2\\)\" style=\"display:none\"/g id=\"layer\\1\" style=\"display:inline\"/"
+    inkscape tmp.svg -D -d 300 --export-png=$3
+    #rm tmp.svg
+}
+
+# Migration
+INPUT=migration-pv.svg
+exportwithoutlayer $INPUT "[234]" migration-pv1.png
+exportwithoutlayer $INPUT "[34]" migration-pv2.png
+exportwithoutlayer $INPUT "[4]" migration-pv3.png
+inkscape $INPUT -i layer1 -d 300 --export-png=migration-pv4.png
+

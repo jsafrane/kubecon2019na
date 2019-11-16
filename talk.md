@@ -46,9 +46,36 @@ template: inverse
 # Data lost during migration
 ## Why?
 
-* `PersistentVolumeReclaimPolicy: Delete`.
-  * *"Delete the volume when this PV is not needed any longer."*
-  * *"Any longer"* = PVC does not exist.
+.center[
+  <img src="migration-pv1.png" width="55%"/><br/>
+]
+
+---
+
+# Data lost during migration
+## Why?
+
+.center[
+  <img src="migration-pv2.png" width="55%"/><br/>
+]
+
+---
+
+# Data lost during migration
+## Why?
+
+.center[
+  <img src="migration-pv3.png" width="55%"/><br/>
+]
+
+---
+
+# Data lost during migration
+## Why?
+
+.center[
+  <img src="migration-pv4.png" width="55%"/><br/>
+]
 
 ---
 # Data lost during migration
