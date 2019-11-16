@@ -21,3 +21,10 @@ exportwithoutlayer $INPUT "[34]" migration-pv2.png
 exportwithoutlayer $INPUT "[4]" migration-pv3.png
 inkscape $INPUT -i layer1 -d 300 --export-png=migration-pv4.png
 
+# Migration with PVC first
+INPUT=migration-pvc.svg
+exportwithoutlayer $INPUT "[2345]" migration-pvc1.png
+exportwithoutlayer $INPUT "[345]" migration-pvc2.png
+exportwithoutlayer $INPUT "[45]" migration-pvc3.png
+exportwithoutlayer $INPUT "[5]" migration-pvc4.png
+exportwithoutlayer $INPUT "999" migration-pvc5.png

@@ -47,7 +47,7 @@ template: inverse
 ## Why?
 
 .center[
-  <img src="migration-pv1.png" width="55%"/><br/>
+  <img src="migration-pv1.png" width="50%"/><br/>
 ]
 
 ---
@@ -56,7 +56,7 @@ template: inverse
 ## Why?
 
 .center[
-  <img src="migration-pv2.png" width="55%"/><br/>
+  <img src="migration-pv2.png" width="50%"/><br/>
 ]
 
 ---
@@ -65,7 +65,7 @@ template: inverse
 ## Why?
 
 .center[
-  <img src="migration-pv3.png" width="55%"/><br/>
+  <img src="migration-pv3.png" width="50%"/><br/>
 ]
 
 ---
@@ -74,10 +74,51 @@ template: inverse
 ## Why?
 
 .center[
-  <img src="migration-pv4.png" width="55%"/><br/>
+  <img src="migration-pv4.png" width="50%"/><br/>
 ]
 
 ---
+
+# Data lost during migration
+## PVC first
+.center[
+  <img src="migration-pvc1.png" width="35%"/><br/>
+]
+
+---
+
+# Data lost during migration
+## PVC first
+.center[
+  <img src="migration-pvc2.png" width="35%"/><br/>
+]
+
+---
+
+# Data lost during migration
+## PVC first
+.center[
+  <img src="migration-pvc3.png" width="35%"/><br/>
+]
+
+---
+
+# Data lost during migration
+## PVC first
+.center[
+  <img src="migration-pvc4.png" width="35%"/><br/>
+]
+
+---
+
+# Data lost during migration
+## PVC first
+.center[
+  <img src="migration-pvc5.png" width="35%"/><br/>
+]
+
+---
+
 # Data lost during migration
 ## It's not a bug, it's a feature!
 
