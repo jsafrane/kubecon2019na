@@ -384,6 +384,8 @@ template: inverse
 * Root disk used as a local volume does not introduce filesystem boundary.
 * The local volume was used with `SubPath` feature.
 
+--
+
 ## How we fixed it?
 
 * Check for SubPath volumes before removing orphan directories.
@@ -405,6 +407,9 @@ template: inverse
 ## What happened?
 
 * User deletes PVC while it's still used by a pod.
+* All data on the volume are wiped.
+
+--
 
 ## Why?
 
@@ -452,34 +457,6 @@ template: inverse
 
 * Lot of workarounds in Kubernetes AWS cloud provider.
 * Still fixing it.
-
----
-
-template: inverse
-# Not fixable issues
-
----
-
-# `PersistentVolumeClaim` naming
-
-* `Pod` is not `CPUAndMemoryClaim`.
---
-* `Service` is not `LoadBalancerClaim`.
---
-* `Volume` **is** `PersistentVolumeClaim` ???
-
---
-
-"Fixed" in `VolumeSnapshot` & `VolumeSnapshotContent`.
-
----
-
-# `AccessModes`
-
-* `ReadWriteOne`, `ReadWriteMany`, `ReadOnlyMany`
-* Enforced only lightly in A/D controller!
-  * Multiple pods can still use single `ReadWriteOne` volume on the same node.
-* Fix would break behavior.
 
 ---
 
@@ -554,3 +531,35 @@ TODO: remove? It's covered in one of the fixed issues.
 * `EmptyDir` shares I/O bandwidth with the system and all other pods.
 * Rogue pod may trash I/O performance for the others.
 * TODO: check?
+
+
+
+---
+# Junkyard
+
+---
+
+template: inverse
+# Not fixable issues
+
+---
+# `PersistentVolumeClaim` naming
+
+* `Pod` is not `CPUAndMemoryClaim`.
+--
+* `Service` is not `LoadBalancerClaim`.
+--
+* `Volume` **is** `PersistentVolumeClaim` ???
+
+--
+
+"Fixed" in `VolumeSnapshot` & `VolumeSnapshotContent`.
+
+---
+
+# `AccessModes`
+
+* `ReadWriteOne`, `ReadWriteMany`, `ReadOnlyMany`
+* Enforced only lightly in A/D controller!
+  * Multiple pods can still use single `ReadWriteOne` volume on the same node.
+* Fix would break behavior.
