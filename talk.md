@@ -11,7 +11,10 @@ class: top, left
 
 ---
 
-class: center, middle
+layout: false
+background-image: url(background_main.png)
+background-size: cover
+class: left, middle
 
 # Storage on Kubernetes
 ## Learning From Failures
@@ -28,6 +31,9 @@ template: inverse
 # Data lost during migration
 
 ---
+name: text-slide
+background-image: url(slide_text.png)
+background-size: cover
 
 # Data lost during migration
 ## What happened?
@@ -49,7 +55,9 @@ template: inverse
   * *"Any longer"* = PVC does not exist.
 
 ---
-
+name: text-slide
+background-image: url(slide_text.png)
+background-size: cover
 # Data lost during migration
 ## It's not a bug, it's a feature!
 
@@ -70,6 +78,9 @@ template: inverse
 # *Subpath volume mount handling allows arbitrary file access in host filesystem*
 
 ---
+name: text-slide
+background-image: url(slide_text.png)
+background-size: cover
 
 # CVE-2017-1002101
 ## What happened?
@@ -87,6 +98,9 @@ A pod can get access to full host filesystem, including:
 * Symlinks created *in a pod* were evaluated *outside of the pod*.
 
 ---
+name: text-slide
+background-image: url(slide_text.png)
+background-size: cover
 
 # CVE-2017-1002101
 ## How we fixed it?
@@ -106,17 +120,27 @@ template: inverse
 # Corrupted filesystem on ReadWriteOnce volumes
 
 ---
+name: text-slide
+background-image: url(slide_text.png)
+background-size: cover
 
-# What happens when a block volume gets mounted on different nodes at the same time?
+# Corrupted filesystem on ReadWriteOnce volumes
 
 * For longest time Kubernetes did not enforce AccessMode of a volume and leaving this to storage provider.
+--
   1. Lacking no control-plane based fencing mechanism, this can cause file system corruption and some very hard to track errors.
+--
   2. In some cases where Storage Provider did not expect it, it caused instances to freeze or refusing to start on reboot.
+--
 * We implemented control-plane based enforcing of AccessMode for attachable volume types.
 
 ---
+name: text-slide
+background-image: url(slide_text.png)
+background-size: cover
 
-# So problem solved?
+# Corrupted filesystem on ReadWriteOnce volumes
+## So problem solved?
 
 * Not really - not all volume types are attachable. 
 * Volume types which are attachable:
@@ -129,8 +153,11 @@ template: inverse
 * A CSI volume type is considered attachable if it implements `ControllerPublishVolume` RPC call.
 
 ---
-
-# Solution for non-attachable volume types
+name: text-slide
+background-image: url(slide_text.png)
+background-size: cover
+# Corrupted filesystem on ReadWriteOnce volumes
+## Solution for non-attachable volume types
 
 * Implement a dummy `Attach` and `Detach` interface which is basically a NO-OP for `iSCSI` and `Ceph-RBD`.
 * Recommendation for CSI driver:
@@ -143,6 +170,9 @@ template: inverse
 # Data on `PersistentVolume` wiped after kubelet restart
 
 ---
+name: text-slide
+background-image: url(slide_text.png)
+background-size: cover
 
 # Data on PV wiped after kubelet restart
 ## What happened?
@@ -159,6 +189,9 @@ template: inverse
   * Orphan directory scan removed all files in presumably empty pod directory. 
 
 ---
+name: text-slide
+background-image: url(slide_text.png)
+background-size: cover
 
 # Data on PV wiped after kubelet restart
 ## How we fixed it?
@@ -180,6 +213,9 @@ template: inverse
 # Data on `PersistentVolume` wiped after kubelet restart *again*
 
 ---
+name: text-slide
+background-image: url(slide_text.png)
+background-size: cover
 
 # Data on PV wiped after kubelet restart *again*
 ## What happened?
@@ -210,6 +246,9 @@ template: inverse
 # Volumes are recycled while they are used by pods
 
 ---
+name: text-slide
+background-image: url(slide_text.png)
+background-size: cover
 
 # Volumes are recycled while they are used by pods
 ## What happened?
@@ -234,6 +273,9 @@ template: inverse
 # Volumes not attached / detached on AWS
 
 ---
+name: text-slide
+background-image: url(slide_text.png)
+background-size: cover
 
 # Volumes not attached / detached on AWS
 ## What happened?
@@ -255,6 +297,9 @@ template: inverse
 * Mounted volumes cannot be detached (*detaching* forever).
 
 ---
+name: text-slide
+background-image: url(slide_text.png)
+background-size: cover
 
 # Volumes not attached / detached on AWS
 
@@ -269,6 +314,9 @@ template: inverse
 # Not fixable issues
 
 ---
+name: text-slide
+background-image: url(slide_text.png)
+background-size: cover
 
 # `PersistentVolumeClaim` naming
 
@@ -283,6 +331,9 @@ template: inverse
 "Fixed" in `VolumeSnapshot` & `VolumeSnapshotContent`.
 
 ---
+name: text-slide
+background-image: url(slide_text.png)
+background-size: cover
 
 # `AccessModes`
 
@@ -297,6 +348,9 @@ template: inverse
 # Open Issues
 
 ---
+name: text-slide
+background-image: url(slide_text.png)
+background-size: cover
 
 # Recursive `chown`
 
@@ -319,23 +373,33 @@ DESCRIPTION:
   * Use overlay FS? Requires the overlay installed on nodes.
 
 ---
+name: text-slide
+background-image: url(slide_text.png)
+background-size: cover
 
-# Shutdown nodes
+# Detaching volumes from shutdown nodes
 
 * Kubernetes will not automatically detach volumes from nodes which have been shutdown.
   * Kubernetes does evict Pods from shutdown nodes automatically.
   * Replacement Pods on new nodes may not be able to start if they are using Persistent volumes.
 
 ---
+name: text-slide
+background-image: url(slide_text.png)
+background-size: cover
 
-# Kubernetes will not detach volumes from shutdown nodes
+# Detaching volumes from shutdown nodes
+## Kubernetes will not detach volumes from shutdown nodes
 
 * Pods on shutdown node do not automatically get deleted and stay in "unknown" state.
 * Kubernetes does not detach volumes from Pods in "unknown" state.
 
 ---
-
-# How do we recover from it?
+name: text-slide
+background-image: url(slide_text.png)
+background-size: cover
+# Detaching volumes from shutdown nodes
+## How do we recover from it?
 
 * On cloudprovider managed clusters such as AWS, GCE - running a cluster in Autoscaling group will cause a shutdown node to be deleted and replaced.
   * Volumes are automatically detached from a deleted node.
@@ -345,6 +409,9 @@ DESCRIPTION:
 
 
 ---
+name: text-slide
+background-image: url(slide_text.png)
+background-size: cover
 
 # Volume reconstruction
 
@@ -357,6 +424,9 @@ TODO: remove? It's covered in one of the fixed issues.
   * Current kubelet checkpoints do not include PVCs / PVs.
 
 ---
+name: text-slide
+background-image: url(slide_text.png)
+background-size: cover
 
 # `EmptyDir` volumes share I/O
 
