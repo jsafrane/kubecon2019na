@@ -37,10 +37,11 @@ exportwithoutlayer $INPUT "999" protection-before3.png
 
 # After PVC protection
 INPUT=protection-after.svg
-exportwithoutlayer $INPUT "[23456]" protection-after1.png
-exportwithoutlayer $INPUT "[3456]" protection-after2.png
-exportwithoutlayer $INPUT "[456]" protection-after3.png
-exportwithoutlayer $INPUT "[56]" protection-after4.png
-exportwithoutlayer $INPUT "[6]" protection-after5.png
-exportwithoutlayer $INPUT "999" protection-after6.png
+exportwithoutlayer $INPUT "[234567]" protection-after1.png
+exportwithoutlayer $INPUT "[34567]" protection-after2.png
+exportwithoutlayer $INPUT "[4567]" protection-after3.png
+exportwithoutlayer $INPUT "[567]" protection-after4.png
+exportwithoutlayer $INPUT "[67]" protection-after5.png
+exportwithoutlayer $INPUT "[7]" protection-after6.png
+exportwithoutlayer $INPUT "999" protection-after7.png
 

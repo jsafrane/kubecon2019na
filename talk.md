@@ -339,10 +339,16 @@ template: inverse
 # Data on PV wiped after kubelet restart
 ## How we fixed it?
 
-* Verify all `os.RemoveAll` in Kubernetes.
+* Review all `os.RemoveAll` in Kubernetes.
   * Never delete orphan directories across filesystem boundary.
-* Introduce *reconstruction* - scan `/var/lib/kubelet/pods` on kubelet start and reconstruct caches.
-  * Still fixing bugs there :-).
+--
+* Introduce *reconstruction*.
+  * Scan `/var/lib/kubelet` on kubelet start and reconstruct caches.
+      ```shell
+      /var/lib/kubelet/plugins/kubernetes.io/aws-ebs/mounts/aws/us-east-1d/vol-0d832d6d2ddf1b41d    
+      /var/lib/kubelet/pods/34f25c90-959d-4b37-b95c-f87e7fc0975f/   \
+              volumes/kubernetes.io~aws-ebs/pvc-ead62ae2-b9fd-45d2-a6fa-8352a9fbfe3a
+      ```
 
 --
 
@@ -409,6 +415,7 @@ template: inverse
 
 # Volumes are recycled while they are used by pods
 ## Why?
+* Kubernetes has no referential integrity.
 
 .center[
   <img src="protection-before2.png" width="65%"/><br/>
@@ -418,6 +425,7 @@ template: inverse
 
 # Volumes are recycled while they are used by pods
 ## Why?
+* Kubernetes has no referential integrity.
 
 .center[
   <img src="protection-before3.png" width="65%"/><br/>
@@ -487,6 +495,17 @@ template: inverse
 
 .center[
   <img src="protection-after6.png" width="65%"/><br/>
+]
+
+---
+
+# Volumes are recycled while they are used by pods
+## How we fixed it?
+* Using `Finalizers`.
+* StorageInUseProtection admission plugin and controller.
+
+.center[
+  <img src="protection-after7.png" width="65%"/><br/>
 ]
 
 ---
