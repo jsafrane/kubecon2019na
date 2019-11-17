@@ -515,29 +515,34 @@ template: inverse
 
 * AWS EBS volume was *attaching* forever.
 * AWS EBS volume was *detaching* forever.
-* + similar issues.
 * Very hard to reproduce.
-
---
-
-## Why?
-
-* Device allocation.
-  * Re-using a device that was just released can lead to volume *attaching* forever.
-  * Devices used by force-detached volumes are unusable.
-* Eventual consistency.
-  * Can go back in time.
-* Mounted volumes cannot be detached (*detaching* forever).
 
 ---
 
 # Volumes not attached / detached on AWS
+* Device name allocation.
+  * Managed by application.
+      * Kubernetes AWS cloud provider device allocator.
+--
+  * Re-using a device that was just released can lead to volume *attaching* forever.
+      * Queue of free device names.
+--
+  * Devices used by force-detached volumes are unusable.
+      * Tainting nodes where attach times out.
+      * Don't force-detach volumes on AWS!
+--
+  * Mounted volumes cannot be detached (*detaching* forever).
+      * Mount propagation bugs in container runtimes.
+--
+* Eventual consistency.
+  * Can go back in time!?
+--
+* Encrypted volumes.
+  * Occasionally not zeroed during creation.
+    * Kubernetes does not overwrite existing data.
+--
 
-##  How we fixed it?
-
-* Lot of workarounds in Kubernetes AWS cloud provider.
-* Still fixing it.
-
+We still love AWS!
 ---
 
 template: inverse
