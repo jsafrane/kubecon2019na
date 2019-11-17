@@ -244,9 +244,6 @@ spec:
 ```
 
 ---
-name: text-slide
-background-image: url(slide_text.png)
-background-size: cover
 
 # Corrupted filesystem on ReadWriteOnce volumes
 * Kubernetes did not enforce AccessModes at all until version 1.7/1.8
@@ -259,9 +256,6 @@ background-size: cover
 * We implemented control-plane based enforcing of AccessModes.
 
 ---
-name: text-slide
-background-image: url(slide_text.png)
-background-size: cover
 
 # Corrupted filesystem on ReadWriteOnce volumes
 ## But those two bugs are newer - 1.10 and 1.14!
@@ -276,9 +270,6 @@ background-size: cover
 * It is based on cached volume state in controller-manager. 
 
 ---
-name: text-slide
-background-image: url(slide_text.png)
-background-size: cover
 
 # Corrupted filesystem on ReadWriteOnce volumes
 ## Attachable volumes:
@@ -295,9 +286,7 @@ background-size: cover
 * CSI volume that does not have `PUBLISH_UNPUBLISH_VOLUME` capability.
 
 ---
-name: text-slide
-background-image: url(slide_text.png)
-background-size: cover
+
 # Corrupted filesystem on ReadWriteOnce volumes
 ## Fix for non-attachable volumes(in-tree)
 --
@@ -308,9 +297,7 @@ background-size: cover
 * It will ensure that volume is made available on a node via control-plane attach/detach controller and not directly.
 
 ---
-name: text-slide
-background-image: url(slide_text.png)
-background-size: cover
+
 # Corrupted filesystem on ReadWriteOnce volumes
 ## Recommendations for CSI Volumes
 * Whenever possible implement strong control-plane based fencing for publishing volumes to a node.
@@ -325,7 +312,6 @@ background-size: cover
   - Ensure that external-attacher is running even if CSI driver does not support attach/detach.
 --
   - Do not disable attach/detach from `CSIDriver` object.
-
 
 ---
 
