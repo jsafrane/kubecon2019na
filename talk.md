@@ -580,19 +580,6 @@ DESCRIPTION:
   * An external controller can monitor for shutdown nodes and force delete pods in "unknown" state from those nodes.
 * Kubernetes community is working on a design consensus that should solve this for good.
 
-
----
-
-# Volume reconstruction
-
-TODO: remove? It's covered in one of the fixed issues.
-
-* kubelet reconstructs caches from `/var/lib/kubelet/pods`.
-  * TODO: add example?
-  * Mostly works and is actively supported!
-* There should be a real database / checkpointing.
-  * Current kubelet checkpoints do not include PVCs / PVs.
-
 ---
 
 # `EmptyDir` volumes share I/O
@@ -632,3 +619,16 @@ template: inverse
 * Enforced only lightly in A/D controller!
   * Multiple pods can still use single `ReadWriteOne` volume on the same node.
 * Fix would break behavior.
+
+---
+
+# Volume reconstruction
+
+TODO: remove? It's covered in one of the fixed issues.
+
+* kubelet reconstructs caches from `/var/lib/kubelet/pods`.
+  * TODO: add example?
+  * Mostly works and is actively supported!
+* There should be a real database / checkpointing.
+  * Current kubelet checkpoints do not include PVCs / PVs.
+
