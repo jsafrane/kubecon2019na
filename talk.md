@@ -506,9 +506,7 @@ template: inverse
 ---
 
 # Volumes not attached / detached on AWS
-* Device name allocation.
-  * Managed by application.
-      * Kubernetes AWS cloud provider device allocator.
+* Kubernetes AWS cloud provider device allocator.
 --
   * Re-using a device that was just released can lead to volume *attaching* forever.
       * Queue of free device names.
