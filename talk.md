@@ -42,13 +42,17 @@ Jan
 ## What happened?
 
 1. User moves PV an PVC objects from "testing" to "production" clusters.
-    ```shell
-    $ kubectl get pv -o yaml > pvs.yaml
-    $ kubectl get pvc -o yaml > pvcs.yaml
-    
-    $ kubectl apply -f pvs.yaml
-    $ kubectl apply -f pvcs.yaml
-    ```
+    * On the testing cluster:
+        ```shell
+        $ kubectl get pv -o yaml > pvs.yaml
+        $ kubectl get pvc -o yaml > pvcs.yaml
+        ```
+    * On the production cluster:
+        ```shell
+        $ kubectl apply -f pvs.yaml
+        $ kubectl apply -f pvcs.yaml
+        ```
+   
 2. **Kubernetes deletes PV and the volume in storage backend.**
 
 ---
@@ -135,7 +139,8 @@ Jan
 * Do regular backups!
 * Use dedicated tools for migration, such as Ark / Velero.
   * *How to Backup and Restore Your Kubernetes Cluster - Annette Clewett & Dylan Murray, Tuesday 4:25pm.*
-* Consider using `PersistentVolumeReclaimPolicy: Retain`.
+* Use `PersistentVolumeReclaimPolicy: Retain`.
+  * Especially before messing up with PV/PVCs.
   * Perhaps with a custom controller / operator that deletes the volumes after review, backup and / or grace period.
 
 --
@@ -417,7 +422,7 @@ Hemant
 
 * And neither we want this in our Kernel logs
 
-```shell
+```
 Aug 26 22:34:57.001029 ip-10-0-6 kernel: XFS (rbd0): Metadata corruption detected at xfs_dir
 Aug 26 22:34:57.001213 ip-10-0-6 kernel: XFS (rbd0): Unmount and run xfs_repair
 Aug 26 22:34:57.001342 ip-10-0-6 kernel: XFS (rbd0): First 128 bytes of corrupted metadata
@@ -616,7 +621,7 @@ template: inverse
 
 # Recursive `chown`
 
-```shell
+```
 $ kubectl explain pod.spec.securityContext.fsGroup
 
 FIELD:    fsGroup <integer>
@@ -665,6 +670,7 @@ Hemant
 * For bare-metal clusters or cloudproviders that don't allow easy replacement of a node, this is a bigger problem.
   * An external controller can monitor for shutdown nodes and force delete pods in "unknown" state from those nodes.
 * Kubernetes community is working on a design consensus that should solve this for good.
+  * [Add node shutdown KEP](https://github.com/kubernetes/enhancements/pull/1116)
 
 ---
 
