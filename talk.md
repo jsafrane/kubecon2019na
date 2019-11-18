@@ -434,16 +434,26 @@ Aug 26 22:34:57.001342 ip-10-0-6 kernel: XFS (rbd0): First 128 bytes of corrupte
 ---
 
 # Corrupted filesystem on ReadWriteOnce volumes
+
+## What happened?
+
+* Same volume could be temporarily mounted on more than one node.
+
+--
+
+## How do we fix it?
+* Storage Provider should fix it.
+* Enforce AccessModes.
+
+---
+
+# Corrupted filesystem on ReadWriteOnce volumes
 ## So what are AccessModes?
 
 --
 
 * ReadWriteOnce
---
-
 * ReadWriteMany
---
-
 * ReadOnlyMany
 
 --
@@ -467,22 +477,27 @@ spec:
 ---
 
 # Corrupted filesystem on ReadWriteOnce volumes
-* Kubernetes did not enforce AccessModes at all until version 1.7/1.8
+## Kubernetes did not enforce AccessModes at all until version 1.7/1.8
 
---
-    * You could always create two pods that use same volume but could be mounted on two different nodes.
---
-    * In cases where Storage Provider did not had any protection/fencing - it caused problems.
---
-* We implemented control-plane based enforcing of AccessModes.
+.center[<img src="multiattach.png" width="50%"> </img>]
 
 ---
 
 # Corrupted filesystem on ReadWriteOnce volumes
-## But those two bugs are newer - 1.10 and 1.14!
+## Kubernetes did not enforce AccessModes at all until version 1.7/1.8
 
---
 
+.center[<img src="multiattach_1.png" width="50%"> </img>]
+
+---
+
+# Corrupted filesystem on ReadWriteOnce volumes
+.middle_center[
+## But those two bugs are newer - 1.10 and 1.14!]
+
+
+---
+# Corrupted filesystem on ReadWriteOnce volumes
 ## Limitations of AccessMode enforcement in Kubernetes
 
 --
