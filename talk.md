@@ -446,7 +446,7 @@ metadata:
   name: myclaim
 spec:
   accessModes:
-    - ReadWriteOnce
+*   - ReadWriteOnce
   resources:
     requests:
       storage: 1Gi
