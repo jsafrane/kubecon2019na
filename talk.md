@@ -517,7 +517,6 @@ spec:
 --
   - May not be possible in some cases where an off-the-shelf storage solution is deployed.
 --
-
 * External-Attacher CSI sidecar can support NOOP attach/detach of volumes which don't have `CONTROLLER_PUPLISH_UNPUBLISH` capability.
 --
   - Ensure that external-attacher is running even if CSI driver does not support attach/detach.
