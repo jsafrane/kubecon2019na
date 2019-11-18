@@ -18,6 +18,9 @@ template: inverse
 Hemant Kumar, Jan Šafránek<br/>
 Red Hat
 
+
+???
+Jan
 ---
 # TODO: agenda / intro
 
@@ -25,7 +28,8 @@ Red Hat
 
 template: inverse
 # Data lost during migration
-
+???
+Jan
 ---
 
 # Data lost during migration
@@ -136,7 +140,8 @@ template: inverse
 
 template: inverse
 # Volumes are recycled while they are used by pods
-
+???
+Jan
 ---
 
 # Volumes are recycled while they are used by pods
@@ -257,6 +262,9 @@ template: inverse
 template: inverse
 # Data on `PersistentVolume` wiped after kubelet restart
 
+???
+Jan
+
 ---
 
 # Data on PV wiped after kubelet restart
@@ -299,6 +307,8 @@ template: inverse
 
 template: inverse
 # Data on `PersistentVolume` wiped after kubelet restart *again*
+???
+Jan
 
 ---
 
@@ -333,6 +343,9 @@ template: inverse
 template: inverse
 # CVE-2017-1002101
 # *Subpath volume mount handling allows arbitrary file access in host filesystem*
+
+???
+Jan
 
 ---
 
@@ -369,7 +382,8 @@ KubeCon NA 2018: [How Symlinks Pwned Kubernetes (And How We Fixed It) - Michelle
 
 template: inverse
 # Corrupted filesystem on ReadWriteOnce volumes
-
+???
+Hemant
 ---
 
 # Corrupted filesystem on ReadWriteOnce volumes
@@ -470,6 +484,7 @@ spec:
 # Corrupted filesystem on ReadWriteOnce volumes
 ## Attachable volumes:
 * AWS EBS
+* OpenStack Cinder
 * GCE PD
 * vSphere disks
 * CSI volume that does have `PUBLISH_UNPUBLISH_VOLUME` capability.
@@ -513,6 +528,9 @@ spec:
 
 template: inverse 
 # Volumes not attached / detached on AWS
+
+???
+Hemant
 
 ---
 
@@ -592,6 +610,8 @@ DESCRIPTION:
   * Make `chown` optional? Requires API change.
   * Use overlay FS? Requires the overlay installed on nodes.
 
+???
+Jan
 ---
 
 # Detaching volumes from shutdown nodes
@@ -599,6 +619,10 @@ DESCRIPTION:
 * Kubernetes will not automatically detach volumes from nodes which have been shutdown.
   * Kubernetes does evict Pods from shutdown nodes automatically.
   * Replacement Pods on new nodes may not be able to start if they are using Persistent volumes.
+
+
+???
+Hemant
 
 ---
 
@@ -625,17 +649,26 @@ DESCRIPTION:
 * `EmptyDir` shares I/O bandwidth with the system and all other pods.
 * Rogue pod may trash I/O performance for the others.
 
+???
+Jan
 ---
 # AWS EBS encrypted volumes occasionaly do not mount
 
 * Sometimes newly created encrypted EBS volumes are not zeroed.
 * Kubernetes does not overwrite existing data.
 
+???
+Hemant
+
 ---
 
 # Summary
 
 * Fixing bugs is never ending process.
+
+
+???
+Hemant
 
 --
 
