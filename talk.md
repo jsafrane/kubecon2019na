@@ -362,6 +362,7 @@ A pod can get access to full host filesystem, including:
   * ...
 
 --
+
 ## Why?
 * Symlinks created *in a pod* were evaluated *outside of the pod*.
 
@@ -392,7 +393,7 @@ Hemant
 
 * Nobody wants this in their Kernel logs
 
-```shell
+```
 [2480314.265276] XFS (dm-43): Unmounting Filesystem
 [2480314.543698] device-mapper: ioctl: remove_all left 68 open device(s)
 [2480342.623544] XFS (dm-7): Metadata corruption detected at xfs_inode_buf_verify
@@ -402,8 +403,10 @@ Hemant
 
 --
 * Kubernetes/Openshift version - 1.10/3.10
+
 --
 * Volume type: Fiber channel
+
 --
 * Reported on: November 2017
 
@@ -421,8 +424,10 @@ Aug 26 22:34:57.001342 ip-10-0-6 kernel: XFS (rbd0): First 128 bytes of corrupte
 ```
 --
 * Kubernetes/Openshift version - 1.14/4.2
+
 --
 * Volume type: Ceph-RBD via CSI/Rook
+
 --
 * Reported on: August 2019
 
@@ -430,12 +435,17 @@ Aug 26 22:34:57.001342 ip-10-0-6 kernel: XFS (rbd0): First 128 bytes of corrupte
 
 # Corrupted filesystem on ReadWriteOnce volumes
 ## So what are AccessModes?
+
 --
+
 * ReadWriteOnce
 --
+
 * ReadWriteMany
 --
+
 * ReadOnlyMany
+
 --
 
 ## You can request a volume of specific AccessMode while creating a PVC:
@@ -458,10 +468,11 @@ spec:
 
 # Corrupted filesystem on ReadWriteOnce volumes
 * Kubernetes did not enforce AccessModes at all until version 1.7/1.8
+
 --
-  - You could always create two pods that use same volume but could be mounted on two different nodes.
+    * You could always create two pods that use same volume but could be mounted on two different nodes.
 --
-  - In cases where Storage Provider did not had any protection/fencing - it caused problems.
+    * In cases where Storage Provider did not had any protection/fencing - it caused problems.
 --
 * We implemented control-plane based enforcing of AccessModes.
 
@@ -471,11 +482,15 @@ spec:
 ## But those two bugs are newer - 1.10 and 1.14!
 
 --
+
 ## Limitations of AccessMode enforcement in Kubernetes
+
 --
 * It only works for volume types that are Attachable.
+
 --
 * It does not prevent 2 pods from using same volume on same node.
+
 --
 * It is based on cached volume state in controller-manager. 
 
@@ -490,6 +505,7 @@ spec:
 * CSI volume that does have `PUBLISH_UNPUBLISH_VOLUME` capability.
 
 --
+
 ## Volume types which are not attachable:
 * iSCSI
 * Ceph-RBD
@@ -500,10 +516,13 @@ spec:
 
 # Corrupted filesystem on ReadWriteOnce volumes
 ## Fix for non-attachable volumes(in-tree)
+
 --
 * Implement a dummy `Attach` and `Detach` interface which is basically a NOOP for `iSCSI`, `FC` and `Ceph-RBD`.
+
 --
 * This would basically turn non-attachable volume types into attachable.
+
 --
 * It will ensure that volume is made available on a node via control-plane attach/detach controller and not directly.
 
@@ -511,15 +530,21 @@ spec:
 
 # Corrupted filesystem on ReadWriteOnce volumes
 ## Recommendations for CSI Volumes
+
 * Whenever possible implement strong control-plane based fencing for publishing volumes to a node.
+
 --
   - Pushes the problem back to storage provider from Kubernetes.
+
 --
   - May not be possible in some cases where an off-the-shelf storage solution is deployed.
+
 --
 * External-Attacher CSI sidecar can support NOOP attach/detach of volumes which don't have `CONTROLLER_PUPLISH_UNPUBLISH` capability.
+
 --
   - Ensure that external-attacher is running even if CSI driver does not support attach/detach.
+
 --
   - Do not disable attach/detach from `CSIDriver` object.
 
@@ -665,24 +690,20 @@ Hemant
 
 * Fixing bugs is never ending process.
 
-
-???
-Hemant
-
 --
-
 * Still learning from our failures.
   * Huge e2e test matrix.
 
 --
-
 * Kubernetes does not loose data *most* of the time.
-  * Unless users ask for it.
-
+    * Unless users ask for it.
 
 --
 
 * Still amazed by user creativity.
+
+???
+Hemant
 
 ---
 
