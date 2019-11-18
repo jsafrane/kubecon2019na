@@ -484,7 +484,7 @@ spec:
 # Corrupted filesystem on ReadWriteOnce volumes
 ## Kubernetes did not enforce AccessModes at all until version 1.7/1.8
 
-.center[<img src="multiattach.png" width="50%"> </img>]
+.center[<img src="multiattach.png" width="35%"> </img>]
 
 ---
 
@@ -492,12 +492,12 @@ spec:
 ## Kubernetes did not enforce AccessModes at all until version 1.7/1.8
 
 
-.center[<img src="multiattach_1.png" width="50%"> </img>]
+.center[<img src="multiattach_1.png" width="35%"> </img>]
 
 ---
 
 # Corrupted filesystem on ReadWriteOnce volumes
-.middle_center[
+.center.middle_center[
 ## But those two bugs are newer - 1.10 and 1.14!]
 
 
