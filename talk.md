@@ -135,6 +135,202 @@ template: inverse
 ---
 
 template: inverse
+# Volumes are recycled while they are used by pods
+
+---
+
+# Volumes are recycled while they are used by pods
+## What happened?
+
+* User deletes PVC while it's still used by a pod.
+* All data on the volume are wiped.
+
+---
+
+# Volumes are recycled while they are used by pods
+## Why?
+* Kubernetes has no referential integrity.
+
+.center[
+  <img src="protection-before1.png" width="65%"/><br/>
+]
+
+---
+
+# Volumes are recycled while they are used by pods
+## Why?
+* Kubernetes has no referential integrity.
+
+.center[
+  <img src="protection-before2.png" width="65%"/><br/>
+]
+
+---
+
+# Volumes are recycled while they are used by pods
+## Why?
+* Kubernetes has no referential integrity.
+
+.center[
+  <img src="protection-before3.png" width="65%"/><br/>
+]
+
+---
+
+# Volumes are recycled while they are used by pods
+## How we fixed it?
+* Using `Finalizers`.
+* StorageInUseProtection admission plugin and controller.
+
+.center[
+  <img src="protection-after1.png" width="65%"/><br/>
+]
+
+---
+
+# Volumes are recycled while they are used by pods
+## How we fixed it?
+* Using `Finalizers`.
+* StorageInUseProtection admission plugin and controller.
+
+.center[
+  <img src="protection-after2.png" width="65%"/><br/>
+]
+
+---
+
+# Volumes are recycled while they are used by pods
+## How we fixed it?
+* Using `Finalizers`.
+* StorageInUseProtection admission plugin and controller.
+
+.center[
+  <img src="protection-after3.png" width="65%"/><br/>
+]
+
+---
+
+# Volumes are recycled while they are used by pods
+## How we fixed it?
+* Using `Finalizers`.
+* StorageInUseProtection admission plugin and controller.
+
+.center[
+  <img src="protection-after4.png" width="65%"/><br/>
+]
+
+---
+
+# Volumes are recycled while they are used by pods
+## How we fixed it?
+* Using `Finalizers`.
+* StorageInUseProtection admission plugin and controller.
+
+.center[
+  <img src="protection-after5.png" width="65%"/><br/>
+]
+
+---
+
+# Volumes are recycled while they are used by pods
+## How we fixed it?
+* Using `Finalizers`.
+* StorageInUseProtection admission plugin and controller.
+
+.center[
+  <img src="protection-after6.png" width="65%"/><br/>
+]
+
+---
+
+# Volumes are recycled while they are used by pods
+## How we fixed it?
+* Using `Finalizers`.
+* StorageInUseProtection admission plugin and controller.
+
+.center[
+  <img src="protection-after7.png" width="65%"/><br/>
+]
+
+---
+
+template: inverse
+# Data on `PersistentVolume` wiped after kubelet restart
+
+---
+
+# Data on PV wiped after kubelet restart
+## What happened?
+
+* Kubelet is offline and a running pod is deleted in the API server.
+* Newly (re)started kubelet deletes all data on a volume that the pod used.
+
+--
+
+## Why?
+
+* Newly (re)started kubelet does not see the pod in API server.
+  * kubelet did not unmount the volume.
+  * Orphan directory scan removed all files in presumably empty pod directory. 
+
+---
+
+# Data on PV wiped after kubelet restart
+## How we fixed it?
+
+* Review all `os.RemoveAll` in Kubernetes.
+  * Never delete orphan directories across filesystem boundary.
+--
+* Introduce *reconstruction*.
+  * Scan `/var/lib/kubelet` on kubelet start and reconstruct caches.
+      ```shell
+      /var/lib/kubelet/plugins/kubernetes.io/aws-ebs/mounts/aws/us-east-1d/vol-0d832d6d2ddf1b41d    
+      /var/lib/kubelet/pods/34f25c90-959d-4b37-b95c-f87e7fc0975f/   \
+              volumes/kubernetes.io~aws-ebs/pvc-ead62ae2-b9fd-45d2-a6fa-8352a9fbfe3a
+      ```
+
+--
+
+## Lessons learned
+
+* Introduced `[Distuptive]` tests for kubelet restart.
+
+---
+
+template: inverse
+# Data on `PersistentVolume` wiped after kubelet restart *again*
+
+---
+
+# Data on PV wiped after kubelet restart *again*
+## What happened?
+
+* A directory on the root disk used as local volume wiped out.
+* Same scenario as above.
+
+--
+
+## Why?
+
+* Root disk used as a local volume does not introduce filesystem boundary.
+* The local volume was used with `SubPath` feature.
+
+--
+
+## How we fixed it?
+
+* Check for SubPath volumes before removing orphan directories.
+
+--
+
+## Lessons learned
+
+* Introduce `[Disruptive]` tests for kubelet restart with `SubPath`.
+
+
+---
+
+template: inverse
 # CVE-2017-1002101
 # *Subpath volume mount handling allows arbitrary file access in host filesystem*
 
@@ -315,201 +511,6 @@ spec:
 
 ---
 
-template: inverse
-# Data on `PersistentVolume` wiped after kubelet restart
-
----
-
-# Data on PV wiped after kubelet restart
-## What happened?
-
-* Kubelet is offline and a running pod is deleted in the API server.
-* Newly (re)started kubelet deletes all data on a volume that the pod used.
-
---
-
-## Why?
-
-* Newly (re)started kubelet does not see the pod in API server.
-  * kubelet did not unmount the volume.
-  * Orphan directory scan removed all files in presumably empty pod directory. 
-
----
-
-# Data on PV wiped after kubelet restart
-## How we fixed it?
-
-* Review all `os.RemoveAll` in Kubernetes.
-  * Never delete orphan directories across filesystem boundary.
---
-* Introduce *reconstruction*.
-  * Scan `/var/lib/kubelet` on kubelet start and reconstruct caches.
-      ```shell
-      /var/lib/kubelet/plugins/kubernetes.io/aws-ebs/mounts/aws/us-east-1d/vol-0d832d6d2ddf1b41d    
-      /var/lib/kubelet/pods/34f25c90-959d-4b37-b95c-f87e7fc0975f/   \
-              volumes/kubernetes.io~aws-ebs/pvc-ead62ae2-b9fd-45d2-a6fa-8352a9fbfe3a
-      ```
-
---
-
-## Lessons learned
-
-* Introduced `[Distuptive]` tests for kubelet restart.
-
----
-
-template: inverse
-# Data on `PersistentVolume` wiped after kubelet restart *again*
-
----
-
-# Data on PV wiped after kubelet restart *again*
-## What happened?
-
-* A directory on the root disk used as local volume wiped out.
-* Same scenario as above.
-
---
-
-## Why?
-
-* Root disk used as a local volume does not introduce filesystem boundary.
-* The local volume was used with `SubPath` feature.
-
---
-
-## How we fixed it?
-
-* Check for SubPath volumes before removing orphan directories.
-
---
-
-## Lessons learned
-
-* Introduce `[Disruptive]` tests for kubelet restart with `SubPath`.
-
----
-
-template: inverse
-# Volumes are recycled while they are used by pods
-
----
-
-# Volumes are recycled while they are used by pods
-## What happened?
-
-* User deletes PVC while it's still used by a pod.
-* All data on the volume are wiped.
-
----
-
-# Volumes are recycled while they are used by pods
-## Why?
-* Kubernetes has no referential integrity.
-
-.center[
-  <img src="protection-before1.png" width="65%"/><br/>
-]
-
----
-
-# Volumes are recycled while they are used by pods
-## Why?
-* Kubernetes has no referential integrity.
-
-.center[
-  <img src="protection-before2.png" width="65%"/><br/>
-]
-
----
-
-# Volumes are recycled while they are used by pods
-## Why?
-* Kubernetes has no referential integrity.
-
-.center[
-  <img src="protection-before3.png" width="65%"/><br/>
-]
-
----
-
-# Volumes are recycled while they are used by pods
-## How we fixed it?
-* Using `Finalizers`.
-* StorageInUseProtection admission plugin and controller.
-
-.center[
-  <img src="protection-after1.png" width="65%"/><br/>
-]
-
----
-
-# Volumes are recycled while they are used by pods
-## How we fixed it?
-* Using `Finalizers`.
-* StorageInUseProtection admission plugin and controller.
-
-.center[
-  <img src="protection-after2.png" width="65%"/><br/>
-]
-
----
-
-# Volumes are recycled while they are used by pods
-## How we fixed it?
-* Using `Finalizers`.
-* StorageInUseProtection admission plugin and controller.
-
-.center[
-  <img src="protection-after3.png" width="65%"/><br/>
-]
-
----
-
-# Volumes are recycled while they are used by pods
-## How we fixed it?
-* Using `Finalizers`.
-* StorageInUseProtection admission plugin and controller.
-
-.center[
-  <img src="protection-after4.png" width="65%"/><br/>
-]
-
----
-
-# Volumes are recycled while they are used by pods
-## How we fixed it?
-* Using `Finalizers`.
-* StorageInUseProtection admission plugin and controller.
-
-.center[
-  <img src="protection-after5.png" width="65%"/><br/>
-]
-
----
-
-# Volumes are recycled while they are used by pods
-## How we fixed it?
-* Using `Finalizers`.
-* StorageInUseProtection admission plugin and controller.
-
-.center[
-  <img src="protection-after6.png" width="65%"/><br/>
-]
-
----
-
-# Volumes are recycled while they are used by pods
-## How we fixed it?
-* Using `Finalizers`.
-* StorageInUseProtection admission plugin and controller.
-
-.center[
-  <img src="protection-after7.png" width="65%"/><br/>
-]
-
----
-
 template: inverse 
 # Volumes not attached / detached on AWS
 
@@ -623,14 +624,38 @@ DESCRIPTION:
 
 * `EmptyDir` shares I/O bandwidth with the system and all other pods.
 * Rogue pod may trash I/O performance for the others.
-* TODO: check?
-
 
 ---
 # AWS EBS encrypted volumes occasionaly do not mount
 
-* Sometimes (~5%) newly created encrypted EBS volumes are not zeroed.
+* Sometimes newly created encrypted EBS volumes are not zeroed.
 * Kubernetes does not overwrite existing data.
+
+---
+
+# Summary
+
+* Fixing bugs is never ending process.
+
+--
+
+* Still learning from our failures.
+  * Huge e2e test matrix.
+
+--
+
+* Kubernetes does not loose data *most* of the time.
+  * Unless users ask for it.
+
+
+--
+
+* Still amazed by user creativity.
+
+---
+
+template: inverse
+# Questions?
 
 ---
 # Junkyard
