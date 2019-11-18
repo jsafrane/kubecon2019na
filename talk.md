@@ -463,7 +463,6 @@ spec:
 --
   - In cases where Storage Provider did not had any protection/fencing - it caused problems.
 --
-
 * We implemented control-plane based enforcing of AccessModes.
 
 ---
