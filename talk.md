@@ -518,31 +518,49 @@ template: inverse
 # Volumes not attached / detached on AWS
 ## What happened?
 
-* AWS EBS volume was *attaching* forever.
-* AWS EBS volume was *detaching* forever.
+* AWS EBS volume was *attaching* / *detaching* forever.
 * Very hard to reproduce.
 
 ---
 
 # Volumes not attached / detached on AWS
-* Kubernetes AWS cloud provider device allocator.
---
+## Kubernetes AWS cloud provider device allocator
+
   * Re-using a device that was just released can lead to volume *attaching* forever.
       * Queue of free device names.
 --
-  * Devices used by force-detached volumes are unusable.
-      * Tainting nodes where attach times out.
+  * Node is unusable after force-detach.
       * Don't force-detach volumes on AWS!
+      * Tainting nodes where attach times out.
+---
+
+# Volumes not attached / detached on AWS
+## Mounted volumes are *detaching* forever
+### Why?
+* Mounted volumes cannot be detached.
+* Mount leaks into other containers due to mount propagation.
+
+### How we fixed it?
+* `oci-umount` hook in container runtime.
+
+---
+
+# Volumes not attached / detached on AWS
+## Eventual consistency
+
+### Why?
+* Volume is detached, but AWS says it's attached.
+* Volume is attached, but AWS says it's detached.
+* Can go back in time.
+  * `detaching`
+  * `detached`
+  * `detaching`
+
 --
-  * Mounted volumes cannot be detached (*detaching* forever).
-      * Mount propagation bugs in container runtimes.
---
-* Eventual consistency.
-  * Can go back in time!?
---
-* Encrypted volumes.
-  * Occasionally not zeroed during creation.
-    * Kubernetes does not overwrite existing data.
+
+### How we fixed it?
+* Uncertain attach state.
+
 --
 
 We still love AWS!
@@ -608,6 +626,11 @@ DESCRIPTION:
 * TODO: check?
 
 
+---
+# AWS EBS encrypted volumes occasionaly do not mount
+
+* Sometimes (~5%) newly created encrypted EBS volumes are not zeroed.
+* Kubernetes does not overwrite existing data.
 
 ---
 # Junkyard
