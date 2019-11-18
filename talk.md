@@ -22,7 +22,13 @@ Red Hat
 ???
 Jan
 ---
-# TODO: agenda / intro
+# Agenda
+
+* Data loss.
+* Security issues.
+* Data corruption.
+* Attach/detach issues.
+* Open issues.
 
 ---
 
@@ -291,11 +297,6 @@ Jan
 --
 * Introduce *reconstruction*.
   * Scan `/var/lib/kubelet` on kubelet start and reconstruct caches.
-      ```shell
-      /var/lib/kubelet/plugins/kubernetes.io/aws-ebs/mounts/aws/us-east-1d/vol-0d832d6d2ddf1b41d    
-      /var/lib/kubelet/pods/34f25c90-959d-4b37-b95c-f87e7fc0975f/   \
-              volumes/kubernetes.io~aws-ebs/pvc-ead62ae2-b9fd-45d2-a6fa-8352a9fbfe3a
-      ```
 
 --
 
