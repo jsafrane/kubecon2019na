@@ -521,7 +521,7 @@ spec:
   - May not be possible in some cases where an off-the-shelf storage solution is deployed.
 
 --
-* External-Attacher CSI sidecar can support NOOP attach/detach of volumes which don't have `CONTROLLER_PUPLISH_UNPUBLISH` capability.
+* External-Attacher CSI sidecar can support NOOP attach/detach of volumes which don't have `PUBLISH_UNPUBLISH_VOLUME` capability.
 
 --
   - Ensure that external-attacher is running even if CSI driver does not support attach/detach.
@@ -551,22 +551,11 @@ Hemant
 ## Kubernetes AWS cloud provider device allocator
 
   * Re-using a device that was just released can lead to volume *attaching* forever.
-      * Queue of free device names.
+      * LRU of free device names.
 --
   * Node is unusable after force-detach.
       * Don't force-detach volumes on AWS!
       * Tainting nodes where attach times out.
----
-
-# Volumes not attached / detached on AWS
-## Mounted volumes are *detaching* forever
-### Why?
-* Mounted volumes cannot be detached.
-* Mount leaks into other containers due to mount propagation.
-
-### How we fixed it?
-* `oci-umount` hook in container runtime.
-
 ---
 
 # Volumes not attached / detached on AWS
