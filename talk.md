@@ -98,10 +98,14 @@ Jan
 * Do regular backups!
 * Use dedicated tools for migration, such as Ark / Velero.
   * *How to Backup and Restore Your Kubernetes Cluster - Annette Clewett & Dylan Murray, Tuesday 4:25pm.*
-* Use `PersistentVolumeReclaimPolicy: Retain`.
-  * Especially before messing up with PV/PVCs.
-  * Perhaps with a custom controller / operator that deletes the volumes after review, backup and / or grace period.
+* Do not mess up with PVs/PVCs.
 
+--
+* But if you want to...
+  * Use `Retain` reclaim policy.
+  * Sanitize PVCs and PVs before restoring them.
+      * Clean `pv.spec.claimRef.UID`.
+      * Clean Kubernetes annotations on PV/PVC.
 --
 
 ## Lessons learned:
@@ -260,9 +264,10 @@ Jan
 
 * Review all `os.RemoveAll` in Kubernetes.
   * Never delete orphan directories across filesystem boundary.
+
 --
 * Introduce *reconstruction*.
-  * Scan `/var/lib/kubelet` on kubelet start and reconstruct caches.
+    * Scan `/var/lib/kubelet` on kubelet start and reconstruct caches.
 
 --
 
