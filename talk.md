@@ -90,47 +90,6 @@ Jan
 .center[
   <img src="migration-pv4.png" width="50%"/><br/>
 ]
-
----
-
-# Data lost during migration
-## PVC first
-.center[
-  <img src="migration-pvc1.png" width="35%"/><br/>
-]
-
----
-
-# Data lost during migration
-## PVC first
-.center[
-  <img src="migration-pvc2.png" width="35%"/><br/>
-]
-
----
-
-# Data lost during migration
-## PVC first
-.center[
-  <img src="migration-pvc3.png" width="35%"/><br/>
-]
-
----
-
-# Data lost during migration
-## PVC first
-.center[
-  <img src="migration-pvc4.png" width="35%"/><br/>
-]
-
----
-
-# Data lost during migration
-## PVC first
-.center[
-  <img src="migration-pvc5.png" width="35%"/><br/>
-]
-
 ---
 
 # Data lost during migration
@@ -145,7 +104,9 @@ Jan
 
 --
 
-## Lessons learned: better documentation!
+## Lessons learned:
+* Education.
+* Better documentation.
 
 ---
 
@@ -773,3 +734,43 @@ TODO: remove? It's covered in one of the fixed issues.
 * There should be a real database / checkpointing.
   * Current kubelet checkpoints do not include PVCs / PVs.
 
+---
+---
+
+# Data lost during migration
+## PVC first
+.center[
+  <img src="migration-pvc1.png" width="35%"/><br/>
+]
+
+---
+
+# Data lost during migration
+## PVC first
+.center[
+  <img src="migration-pvc2.png" width="35%"/><br/>
+]
+
+---
+
+# Data lost during migration
+## PVC first
+.center[
+  <img src="migration-pvc3.png" width="35%"/><br/>
+]
+
+---
+
+# Data lost during migration
+## PVC first
+.center[
+  <img src="migration-pvc4.png" width="35%"/><br/>
+]
+
+---
+
+# Data lost during migration
+## PVC first
+.center[
+  <img src="migration-pvc5.png" width="35%"/><br/>
+]
