@@ -41,7 +41,7 @@ Jan
 # Data lost during migration
 ## What happened?
 
-1. User moves PV an PVC objects from "testing" to "production" clusters.
+1. User moves PV and PVC objects from "testing" to "production" clusters.
     * On the testing cluster:
         ```shell
         $ kubectl get pv -o yaml > pvs.yaml
@@ -515,7 +515,7 @@ spec:
 ---
 
 # Corrupted filesystem on ReadWriteOnce volumes
-## Recommendations for CSI Volumes
+## Recommendations for CSI Drivers
 
 * Whenever possible implement strong control-plane based fencing for publishing volumes to a node.
 
@@ -533,6 +533,13 @@ spec:
 
 --
   - Do not disable attach/detach from `CSIDriver` object.
+
+---
+
+# Corrupted filesystem on ReadWriteOnce volumes
+
+.center.middle_center[
+## Prefer use of StatefulSet over Deployment for workloads that use Storage]
 
 ---
 
@@ -685,86 +692,3 @@ Hemant
 
 template: inverse
 # Questions?
-
----
-# Junkyard
-
----
-
-template: inverse
-# Not fixable issues
-
----
-# `PersistentVolumeClaim` naming
-
-* `Pod` is not `CPUAndMemoryClaim`.
---
-* `Service` is not `LoadBalancerClaim`.
---
-* `Volume` **is** `PersistentVolumeClaim` ???
-
---
-
-"Fixed" in `VolumeSnapshot` & `VolumeSnapshotContent`.
-
----
-
-# `AccessModes`
-
-* `ReadWriteOne`, `ReadWriteMany`, `ReadOnlyMany`
-* Enforced only lightly in A/D controller!
-  * Multiple pods can still use single `ReadWriteOne` volume on the same node.
-* Fix would break behavior.
-
----
-
-# Volume reconstruction
-
-TODO: remove? It's covered in one of the fixed issues.
-
-* kubelet reconstructs caches from `/var/lib/kubelet/pods`.
-  * TODO: add example?
-  * Mostly works and is actively supported!
-* There should be a real database / checkpointing.
-  * Current kubelet checkpoints do not include PVCs / PVs.
-
----
----
-
-# Data lost during migration
-## PVC first
-.center[
-  <img src="migration-pvc1.png" width="35%"/><br/>
-]
-
----
-
-# Data lost during migration
-## PVC first
-.center[
-  <img src="migration-pvc2.png" width="35%"/><br/>
-]
-
----
-
-# Data lost during migration
-## PVC first
-.center[
-  <img src="migration-pvc3.png" width="35%"/><br/>
-]
-
----
-
-# Data lost during migration
-## PVC first
-.center[
-  <img src="migration-pvc4.png" width="35%"/><br/>
-]
-
----
-
-# Data lost during migration
-## PVC first
-.center[
-  <img src="migration-pvc5.png" width="35%"/><br/>
-]
