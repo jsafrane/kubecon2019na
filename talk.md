@@ -96,17 +96,19 @@ Jan
 ## It's not a bug, it's a feature!
 
 * Do regular backups!
-* Use dedicated tools for migration, such as Ark / Velero.
-  * *How to Backup and Restore Your Kubernetes Cluster - Annette Clewett & Dylan Murray, Tuesday 4:25pm.*
 * Do not mess up with PVs/PVCs.
+    * Use dedicated tools for migration, such as Ark / Velero.
+        * *How to Backup and Restore Your Kubernetes Cluster - Annette Clewett & Dylan Murray, Tuesday 4:25pm.*
 
 --
+
 * But if you want to...
   * Use `Retain` reclaim policy.
   * Sanitize PVCs and PVs before restoring them.
       * Clean `pv.spec.claimRef.UID`.
       * Clean Kubernetes annotations on PV/PVC.
---
+---
+# Data lost during migration
 
 ## Lessons learned:
 * Education.
@@ -577,9 +579,11 @@ Hemant
 * Volume is detached, but AWS says it's attached.
 * Volume is attached, but AWS says it's detached.
 * Can go back in time.
-  * `detaching`
-  * `detached`
-  * `detaching`
+  1. `volume is detaching`
+  2. `volume is detaching`
+  3. ...
+  4. `volume is detached`
+  5. **`volume is detaching`** ?!
 
 --
 
